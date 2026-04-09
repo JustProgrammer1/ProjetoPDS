@@ -132,37 +132,53 @@ public class ProdutoDAO {
      */
     public boolean finalizarCompra(int usuarioId, List<ItemCarrinho> itens, double total) {
         Connection conn = Conexao.getConexao();
+        if (conn == null) return false;
         try {
             conn.setAutoCommit(false);
 
             // Inserir cabeçalho da compra
             String sqlCompra = "INSERT INTO compras (usuario_id, total) VALUES (?, ?)";
-            PreparedStatement stmtCompra = conn.prepareStatement(sqlCompra, Statement.RETURN_GENERATED_KEYS);
-            stmtCompra.setInt(1, usuarioId);
-            stmtCompra.setDouble(2, total);
-            stmtCompra.executeUpdate();
+            try (PreparedStatement stmtCompra = conn.prepareStatement(sqlCompra, Statement.RETURN_GENERATED_KEYS)) {
+                stmtCompra.setInt(1, usuarioId);
+                stmtCompra.setDouble(2, total);
+                stmtCompra.executeUpdate();
 
-            ResultSet keys = stmtCompra.getGeneratedKeys();
-            int compraId = 0;
-            if (keys.next()) compraId = keys.getInt(1);
+                ResultSet keys = stmtCompra.getGeneratedKeys();
+                int compraId = 0;
+                if (keys.next()) compraId = keys.getInt(1);
 
-            // Inserir itens e atualizar estoque
-            String sqlItem = "INSERT INTO itens_compra (compra_id, produto_id, quantidade, preco_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
-            String sqlEstoque = "UPDATE produtos SET quantidade_estoque = quantidade_estoque - ? WHERE id = ?";
+                if (compraId <= 0) {
+                    conn.rollback();
+                    conn.setAutoCommit(true);
+                    return false;
+                }
 
-            for (ItemCarrinho item : itens) {
-                PreparedStatement stmtItem = conn.prepareStatement(sqlItem);
-                stmtItem.setInt(1, compraId);
-                stmtItem.setInt(2, item.getProduto().getId());
-                stmtItem.setInt(3, item.getQuantidade());
-                stmtItem.setDouble(4, item.getProduto().getPreco());
-                stmtItem.setDouble(5, item.getSubtotal());
-                stmtItem.executeUpdate();
+                // Inserir itens e atualizar estoque com proteção contra estoque negativo
+                String sqlItem = "INSERT INTO itens_compra (compra_id, produto_id, quantidade, preco_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
+                String sqlEstoque = "UPDATE produtos SET quantidade_estoque = quantidade_estoque - ? WHERE id = ? AND quantidade_estoque >= ?";
 
-                PreparedStatement stmtEst = conn.prepareStatement(sqlEstoque);
-                stmtEst.setInt(1, item.getQuantidade());
-                stmtEst.setInt(2, item.getProduto().getId());
-                stmtEst.executeUpdate();
+                try (PreparedStatement stmtItem = conn.prepareStatement(sqlItem);
+                     PreparedStatement stmtEst = conn.prepareStatement(sqlEstoque)) {
+                    for (ItemCarrinho item : itens) {
+                        stmtItem.setInt(1, compraId);
+                        stmtItem.setInt(2, item.getProduto().getId());
+                        stmtItem.setInt(3, item.getQuantidade());
+                        stmtItem.setDouble(4, item.getProduto().getPreco());
+                        stmtItem.setDouble(5, item.getSubtotal());
+                        stmtItem.executeUpdate();
+
+                        stmtEst.setInt(1, item.getQuantidade());
+                        stmtEst.setInt(2, item.getProduto().getId());
+                        stmtEst.setInt(3, item.getQuantidade());
+                        int linhasAfetadas = stmtEst.executeUpdate();
+
+                        if (linhasAfetadas == 0) {
+                            conn.rollback();
+                            conn.setAutoCommit(true);
+                            return false;
+                        }
+                    }
+                }
             }
 
             conn.commit();

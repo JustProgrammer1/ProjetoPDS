@@ -15,9 +15,9 @@ public class Conexao {
     // CONFIGURAÇÕES DE CONEXÃO - ALTERE AQUI
     // =============================================
     // createDatabaseIfNotExist evita falha quando o schema ainda não foi criado.
-    private static final String URL      = "jdbc:mysql://localhost:3306/supermercado_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo";
-    private static final String USUARIO  = "root";
-    private static final String SENHA    = "admin"; // <-- Altere para sua senha do MySQL
+    private static final String URL      = "jdbc:mysql://localhost:3306/supermercado_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private static final String USUARIO  = lerConfig("DB_USER", "root");
+    private static final String SENHA    = lerConfig("DB_PASSWORD", ""); // defina DB_PASSWORD se necessário
     // =============================================
 
     private static Connection instancia = null;
@@ -46,6 +46,14 @@ public class Conexao {
                 "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
         }
         return instancia;
+    }
+
+    private static String lerConfig(String chave, String padrao) {
+        String valor = System.getProperty(chave);
+        if (valor == null || valor.trim().isEmpty()) {
+            valor = System.getenv(chave);
+        }
+        return (valor == null || valor.trim().isEmpty()) ? padrao : valor.trim();
     }
 
     /**

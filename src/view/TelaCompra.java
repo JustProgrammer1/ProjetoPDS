@@ -137,7 +137,7 @@ public class TelaCompra extends JFrame {
         lblCarrinho.setForeground(new Color(27, 94, 32));
         painelDir.add(lblCarrinho, BorderLayout.NORTH);
 
-        String[] colsCarrinho = {"Produto", "Qtd", "Subtotal (R$)"};
+        String[] colsCarrinho = {"ID", "Produto", "Qtd", "Subtotal (R$)"};
         modeloCarrinho = new DefaultTableModel(colsCarrinho, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
@@ -145,8 +145,11 @@ public class TelaCompra extends JFrame {
         tabelaCarrinho.setFont(new Font("Arial", Font.PLAIN, 13));
         tabelaCarrinho.setRowHeight(24);
         tabelaCarrinho.setSelectionBackground(new Color(255, 204, 128));
-        tabelaCarrinho.getColumnModel().getColumn(1).setMaxWidth(45);
-        tabelaCarrinho.getColumnModel().getColumn(2).setPreferredWidth(90);
+        tabelaCarrinho.getColumnModel().getColumn(0).setMinWidth(0);
+        tabelaCarrinho.getColumnModel().getColumn(0).setMaxWidth(0);
+        tabelaCarrinho.getColumnModel().getColumn(0).setWidth(0);
+        tabelaCarrinho.getColumnModel().getColumn(2).setMaxWidth(45);
+        tabelaCarrinho.getColumnModel().getColumn(3).setPreferredWidth(90);
 
         JScrollPane scrollCart = new JScrollPane(tabelaCarrinho);
         painelDir.add(scrollCart, BorderLayout.CENTER);
@@ -204,6 +207,7 @@ public class TelaCompra extends JFrame {
         List<ItemCarrinho> itens = compraController.getCarrinho();
         for (ItemCarrinho item : itens) {
             modeloCarrinho.addRow(new Object[]{
+                item.getProduto().getId(),
                 item.getProduto().getNome(),
                 item.getQuantidade(),
                 String.format("%.2f", item.getSubtotal())
@@ -241,14 +245,8 @@ public class TelaCompra extends JFrame {
             return;
         }
 
-        String nomeProd = (String) modeloCarrinho.getValueAt(linha, 0);
-        // Encontrar ID pelo nome
-        for (ItemCarrinho item : compraController.getCarrinho()) {
-            if (item.getProduto().getNome().equals(nomeProd)) {
-                compraController.removerDoCarrinho(item.getProduto().getId());
-                break;
-            }
-        }
+        int produtoId = (int) modeloCarrinho.getValueAt(linha, 0);
+        compraController.removerDoCarrinho(produtoId);
         atualizarCarrinho();
         JOptionPane.showMessageDialog(this, "Item removido do carrinho.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     }

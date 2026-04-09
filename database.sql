@@ -47,17 +47,42 @@ CREATE TABLE IF NOT EXISTS itens_compra (
 -- DADOS INICIAIS (opcional)
 -- ============================================
 
--- Usuário administrador padrão
-INSERT INTO usuarios (nome, cpf, administrador) VALUES
-('Administrador', '000.000.000-00', TRUE);
+-- Usuário administrador padrão (idempotente)
+INSERT INTO usuarios (nome, cpf, administrador)
+SELECT 'Administrador', '000.000.000-00', TRUE
+WHERE NOT EXISTS (
+    SELECT 1 FROM usuarios WHERE cpf = '000.000.000-00'
+);
 
--- Produtos de exemplo
-INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria) VALUES
-('Arroz Integral 1kg', 'Arroz integral tipo 1', 8.90, 50, 'Grãos'),
-('Feijão Carioca 1kg', 'Feijão carioca tipo 1', 7.50, 40, 'Grãos'),
-('Leite Integral 1L', 'Leite integral UHT', 4.99, 100, 'Laticínios'),
-('Açúcar Refinado 1kg', 'Açúcar refinado especial', 4.50, 60, 'Mercearia'),
-('Óleo de Soja 900ml', 'Óleo de soja refinado', 6.99, 45, 'Mercearia'),
-('Macarrão Espaguete 500g', 'Macarrão espaguete grano duro', 3.99, 80, 'Massas'),
-('Café Moído 500g', 'Café torrado e moído', 15.90, 35, 'Bebidas'),
-('Sabão em Pó 1kg', 'Sabão em pó multiação', 12.50, 30, 'Limpeza');
+-- Produtos de exemplo (idempotente por nome)
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Arroz Integral 1kg', 'Arroz integral tipo 1', 8.90, 50, 'Grãos'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Arroz Integral 1kg');
+
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Feijão Carioca 1kg', 'Feijão carioca tipo 1', 7.50, 40, 'Grãos'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Feijão Carioca 1kg');
+
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Leite Integral 1L', 'Leite integral UHT', 4.99, 100, 'Laticínios'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Leite Integral 1L');
+
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Açúcar Refinado 1kg', 'Açúcar refinado especial', 4.50, 60, 'Mercearia'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Açúcar Refinado 1kg');
+
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Óleo de Soja 900ml', 'Óleo de soja refinado', 6.99, 45, 'Mercearia'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Óleo de Soja 900ml');
+
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Macarrão Espaguete 500g', 'Macarrão espaguete grano duro', 3.99, 80, 'Massas'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Macarrão Espaguete 500g');
+
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Café Moído 500g', 'Café torrado e moído', 15.90, 35, 'Bebidas'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Café Moído 500g');
+
+INSERT INTO produtos (nome, descricao, preco, quantidade_estoque, categoria)
+SELECT 'Sabão em Pó 1kg', 'Sabão em pó multiação', 12.50, 30, 'Limpeza'
+WHERE NOT EXISTS (SELECT 1 FROM produtos WHERE nome = 'Sabão em Pó 1kg');
