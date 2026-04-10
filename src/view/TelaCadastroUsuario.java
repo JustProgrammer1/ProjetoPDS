@@ -113,19 +113,11 @@ public class TelaCadastroUsuario extends JFrame {
         painelBotoes.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         btnSalvar = new JButton("Salvar Cadastro");
-        btnSalvar.setBackground(new Color(27, 94, 32));
-        btnSalvar.setForeground(Color.WHITE);
-        btnSalvar.setFont(new Font("Arial", Font.BOLD, 13));
-        btnSalvar.setFocusPainted(false);
-        btnSalvar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        estilizarBotao(btnSalvar, new Color(27, 94, 32));
         btnSalvar.addActionListener(e -> salvarUsuario());
 
         btnVoltar = new JButton("← Voltar");
-        btnVoltar.setBackground(new Color(117, 117, 117));
-        btnVoltar.setForeground(Color.WHITE);
-        btnVoltar.setFont(new Font("Arial", Font.BOLD, 13));
-        btnVoltar.setFocusPainted(false);
-        btnVoltar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        estilizarBotao(btnVoltar, new Color(117, 117, 117));
         btnVoltar.addActionListener(e -> voltarLogin());
 
         painelBotoes.add(btnVoltar);
@@ -185,5 +177,16 @@ public class TelaCadastroUsuario extends JFrame {
         }
         txtCpf.setText(f.toString());
         txtCpf.setCaretPosition(Math.min(f.length(), txtCpf.getText().length()));
+    }
+
+    private void estilizarBotao(JButton botao, Color corFundo) {
+        botao.setBackground(corFundo);
+        botao.setForeground(Color.WHITE);
+        botao.setFont(new Font("Arial", Font.BOLD, 13));
+        botao.setFocusPainted(false);
+        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botao.setOpaque(true);
+        botao.setContentAreaFilled(true);
+        botao.setBorderPainted(false);
     }
 }

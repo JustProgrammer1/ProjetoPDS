@@ -16,7 +16,9 @@ public class UsuarioDAO {
      */
     public boolean inserir(Usuario usuario) {
         String sql = "INSERT INTO usuarios (nome, cpf, administrador) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = Conexao.getConexao().prepareStatement(sql)) {
+        Connection conexao = Conexao.getConexao();
+        if (conexao == null) return false;
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, usuario.getNome());
             stmt.setString(2, usuario.getCpf());
             stmt.setBoolean(3, usuario.isAdministrador());
@@ -35,7 +37,9 @@ public class UsuarioDAO {
      */
     public Usuario buscarPorNomeECpf(String nome, String cpf) {
         String sql = "SELECT * FROM usuarios WHERE nome = ? AND cpf = ?";
-        try (PreparedStatement stmt = Conexao.getConexao().prepareStatement(sql)) {
+        Connection conexao = Conexao.getConexao();
+        if (conexao == null) return null;
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, nome);
             stmt.setString(2, cpf);
             ResultSet rs = stmt.executeQuery();
@@ -53,7 +57,9 @@ public class UsuarioDAO {
      */
     public boolean cpfExiste(String cpf) {
         String sql = "SELECT COUNT(*) FROM usuarios WHERE cpf = ?";
-        try (PreparedStatement stmt = Conexao.getConexao().prepareStatement(sql)) {
+        Connection conexao = Conexao.getConexao();
+        if (conexao == null) return false;
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, cpf);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -71,7 +77,9 @@ public class UsuarioDAO {
     public List<Usuario> listarTodos() {
         List<Usuario> lista = new ArrayList<>();
         String sql = "SELECT * FROM usuarios ORDER BY nome";
-        try (Statement stmt = Conexao.getConexao().createStatement()) {
+        Connection conexao = Conexao.getConexao();
+        if (conexao == null) return lista;
+        try (Statement stmt = conexao.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 lista.add(mapear(rs));

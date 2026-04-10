@@ -282,6 +282,9 @@ public class TelaProdutos extends JFrame {
         b.setFont(new Font("Arial", Font.BOLD, 12));
         b.setFocusPainted(false);
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        b.setOpaque(true);
+        b.setContentAreaFilled(true);
+        b.setBorderPainted(false);
         b.setPreferredSize(new Dimension(0, 32));
         return b;
     }

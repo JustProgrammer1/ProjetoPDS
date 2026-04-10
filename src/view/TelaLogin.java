@@ -110,19 +110,11 @@ public class TelaLogin extends JFrame {
         painelBotoes.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         btnEntrar = new JButton("Entrar");
-        btnEntrar.setBackground(new Color(27, 94, 32));
-        btnEntrar.setForeground(Color.WHITE);
-        btnEntrar.setFont(new Font("Arial", Font.BOLD, 13));
-        btnEntrar.setFocusPainted(false);
-        btnEntrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        estilizarBotao(btnEntrar, new Color(27, 94, 32));
         btnEntrar.addActionListener(this::acaoLogin);
 
         btnCadastrar = new JButton("Cadastrar-se");
-        btnCadastrar.setBackground(new Color(66, 165, 245));
-        btnCadastrar.setForeground(Color.WHITE);
-        btnCadastrar.setFont(new Font("Arial", Font.BOLD, 13));
-        btnCadastrar.setFocusPainted(false);
-        btnCadastrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        estilizarBotao(btnCadastrar, new Color(66, 165, 245));
         btnCadastrar.addActionListener(e -> abrirCadastro());
 
         painelBotoes.add(btnEntrar);
@@ -182,5 +174,16 @@ public class TelaLogin extends JFrame {
         int caret = formatado.length();
         txtCpf.setText(formatado.toString());
         txtCpf.setCaretPosition(Math.min(caret, txtCpf.getText().length()));
+    }
+
+    private void estilizarBotao(JButton botao, Color corFundo) {
+        botao.setBackground(corFundo);
+        botao.setForeground(Color.WHITE);
+        botao.setFont(new Font("Arial", Font.BOLD, 13));
+        botao.setFocusPainted(false);
+        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botao.setOpaque(true);
+        botao.setContentAreaFilled(true);
+        botao.setBorderPainted(false);
     }
 }

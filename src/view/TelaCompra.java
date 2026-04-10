@@ -349,7 +349,11 @@ public class TelaCompra extends JFrame {
         b.setFont(new Font("Arial", Font.BOLD, 12));
         b.setFocusPainted(false);
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        b.setPreferredSize(new Dimension(0, 32));
+        b.setOpaque(true);
+        b.setContentAreaFilled(true);
+        b.setBorderPainted(false);
+        // Mantém altura consistente sem zerar a largura do botão.
+        b.setPreferredSize(new Dimension(190, 32));
         return b;
     }
 }
